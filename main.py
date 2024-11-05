@@ -9,6 +9,9 @@ class WebScraperApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Web Scraper App")
+        self.root.geometry("800x600")
+        self.root.minsize(600, 400)
+        self.root.maxsize(1200, 800)
 
         self.style = ttk.Style(self.root)
         self.style.theme_use("arc")
@@ -26,8 +29,17 @@ class WebScraperApp:
         scrape_btn = ttk.Button(self.frame, text="Scrape", command=self.scrape_data)
         scrape_btn.grid(row=0, column=2, padx=10)
 
+        output_label = ttk.Label(self.frame, text="Output Type:")
+        output_label.grid(row=1, column=0, padx=10, pady=10)
+
+        self.output_type = tk.StringVar(value="Headers")
+        headers_rbtn = ttk.Radiobutton(self.frame, text="Headers", variable=self.output_type, value="Headers")
+        headers_rbtn.grid(row=1, column=1, padx=10, pady=10)
+        links_rbtn = ttk.Radiobutton(self.frame, text="Links", variable=self.output_type, value="Links")
+        links_rbtn.grid(row=1, column=2, padx=10, pady=10)
+
         export_btn = ttk.Button(self.frame, text="Export to CSV", command=self.export_to_csv)
-        export_btn.grid(row=1, column=1, pady=10)
+        export_btn.grid(row=2, column=1, pady=10)
 
         self.output_text = scrolledtext.ScrolledText(self.root, width=80, height=20, wrap=tk.WORD)
         self.output_text.grid(row=1, column=0, padx=10, pady=10)
@@ -36,9 +48,10 @@ class WebScraperApp:
 
     def scrape_data(self):
         url = self.url_entry.get()
+        output_type = self.output_type.get()
         if url:
             try:
-                self.scraped_data = scraper.scrape(url)
+                self.scraped_data = scraper.scrape(url, output_type)
                 self.output_text.delete(1.0, tk.END)
                 for item in self.scraped_data:
                     self.output_text.insert(tk.END, item + "\n")
@@ -53,7 +66,7 @@ class WebScraperApp:
             file_path = filedialog.asksaveasfilename(defaultextension=".csv", filetypes=[("CSV files", "*.csv")])
             if file_path:
                 try:
-                    df = pd.DataFrame(self.scraped_data, columns=["Headers"])
+                    df = pd.DataFrame(self.scraped_data, columns=[self.output_type.get()])
                     df.to_csv(file_path, index=False)
                     messagebox.showinfo("Success", "Data exported to CSV successfully.")
                 except Exception as e:

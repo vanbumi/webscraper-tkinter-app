@@ -14,9 +14,13 @@ Create webscraper with  the following features:
 - further improvements and development to be made in the future.
 
 
-
-
-
-
-
 ![alt text](image.png)
+
+### Update
+
+![alt text](image-1.png)
+
+![alt text](image-2.png)
+
+![alt text](image-3.png)
+
